@@ -1,0 +1,219 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Athlete's profile, stats, and career progress.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique user ID." },
+        "displayName": { "type": "string", "description": "Athlete's name." },
+        "photoURL": { "type": "string", "description": "Profile picture URL." },
+        "role": { "type": "string", "enum": ["athlete", "coach", "admin"], "description": "User's role." },
+        "stats": {
+          "type": "object",
+          "properties": {
+            "dribbling": { "type": "number", "description": "Dribbling skill rating (0-100)." },
+            "shooting": { "type": "number", "description": "Shooting skill rating (0-100)." },
+            "finishing": { "type": "number", "description": "Finishing skill rating (0-100)." },
+            "iq": { "type": "number", "description": "Basketball IQ rating (0-100)." },
+            "athleticism": { "type": "number", "description": "Athleticism rating (0-100)." }
+          }
+        },
+        "careerPhase": { "type": "string", "enum": ["LOCAL", "AAU", "EYBL", "NCAA", "PRO", "NBA"], "description": "Current career stage." },
+        "streak": { "type": "number", "description": "Current training streak in days." },
+        "points": { "type": "number", "description": "Gamification points." },
+        "height": { "type": "number", "description": "Height in cm." },
+        "weight": { "type": "number", "description": "Weight in kg." },
+        "age": { "type": "number", "description": "Age in years." },
+        "gender": { "type": "string", "enum": ["male", "female"], "description": "Gender for BMR calculation." },
+        "avatarItems": { "type": "array", "items": { "type": "string" }, "description": "Unlocked items (shoes, clothes)." },
+        "achievements": { "type": "array", "items": { "type": "string" }, "description": "IDs of unlocked achievements." },
+        "completedScenarios": { "type": "array", "items": { "type": "string" }, "description": "IDs of completed IQ scenarios." },
+        "lastIQReset": { "type": "string", "description": "ISO date of last IQ reset." },
+        "lastSkillTestDate": { "type": "string", "description": "ISO date of last skill test." },
+        "nutritionLog": { "type": "array", "items": { "type": "object" }, "description": "History of nutrition entries." },
+        "equippedItems": { "type": "object", "description": "Currently equipped avatar items." }
+      },
+      "required": ["uid", "displayName"]
+    },
+    "ScheduleSession": {
+      "title": "Training Session",
+      "description": "A manually scheduled training activity.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique session ID." },
+        "type": { "type": "string", "enum": ["Basketball", "Ball handling", "Shooting", "Finishing", "Strength", "Explosiveness", "Cardio", "IQ Study", "Team Practice", "Rest", "Game", "Meeting", "Recovery", "Film Session", "School", "Event", "Personal"], "description": "Type of session." },
+        "startTime": { "type": "string", "format": "date-time", "description": "Scheduled start time." },
+        "duration": { "type": "number", "description": "Duration in minutes." },
+        "intensity": { "type": "number", "description": "Intensity level (1-10)." },
+        "completed": { "type": "boolean", "description": "Whether the session was finished." },
+        "notes": { "type": "string", "description": "User notes for the session." },
+        "workoutId": { "type": "string", "description": "Reference to a workout template." },
+        "exercises": { "type": "array", "items": { "type": "object" }, "description": "Custom exercises for this session." },
+        "intervalConfig": { "type": "object", "description": "Interval training settings." },
+        "xpAwarded": { "type": "boolean", "description": "Whether XP has been awarded for this session." }
+      },
+      "required": ["id", "type", "startTime", "duration"]
+    },
+    "SkillLog": {
+      "title": "Skill Reflection",
+      "description": "Post-session reflection on specific skill criteria.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique log ID." },
+        "sessionId": { "type": "string", "description": "Reference to the training session." },
+        "skillType": { "type": "string", "enum": ["dribbling", "shooting", "finishing", "iq", "defense"], "description": "The skill being reflected on." },
+        "criteria": {
+          "type": "object",
+          "properties": {
+            "c1": { "type": "number", "description": "Criterion 1 rating (1-5)." },
+            "c2": { "type": "number", "description": "Criterion 2 rating (1-5)." },
+            "c3": { "type": "number", "description": "Criterion 3 rating (1-5)." },
+            "c4": { "type": "number", "description": "Criterion 4 rating (1-5)." }
+          }
+        },
+        "timestamp": { "type": "string", "format": "date-time", "description": "When the reflection was recorded." }
+      },
+      "required": ["id", "skillType", "criteria", "timestamp"]
+    },
+    "Drill": {
+      "title": "Basketball Drill",
+      "description": "A specific exercise from the library.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique drill ID." },
+        "title": { "type": "string", "description": "Drill name." },
+        "category": { "type": "string", "description": "Skill category (e.g., Dribbling)." },
+        "intensity": { "type": "string", "enum": ["Low", "Medium", "High"], "description": "Intensity level." },
+        "description": { "type": "string", "description": "How to perform the drill." },
+        "videoUrl": { "type": "string", "description": "Optional video reference." },
+        "tags": { "type": "array", "items": { "type": "string" }, "description": "Searchable tags." }
+      },
+      "required": ["id", "title", "category"]
+    },
+    "Workout": {
+      "title": "Workout Routine",
+      "description": "A collection of drills forming a workout.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique workout ID." },
+        "title": { "type": "string", "description": "Workout name." },
+        "description": { "type": "string", "description": "Workout description." },
+        "drills": { "type": "array", "items": { "type": "string" }, "description": "List of drill IDs." },
+        "userId": { "type": "string", "description": "Owner ID (null for premade)." },
+        "category": { "type": "string", "description": "Main skill focus." },
+        "exercises": { "type": "array", "items": { "type": "object" }, "description": "Custom exercises for this workout." },
+        "intervalConfig": { "type": "object", "description": "Interval training settings." }
+      },
+      "required": ["id", "title", "drills"]
+    },
+    "Achievement": {
+      "title": "Athlete Achievement",
+      "description": "A milestone reached by the athlete.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique achievement ID." },
+        "title": { "type": "string", "description": "Achievement name." },
+        "description": { "type": "string", "description": "How to earn it." },
+        "icon": { "type": "string", "description": "Lucide icon name." },
+        "points": { "type": "number", "description": "Points awarded." },
+        "requirement": { "type": "object", "description": "Conditions to unlock." }
+      },
+      "required": ["id", "title", "points"]
+    },
+    "AppNotification": {
+      "title": "App Notification",
+      "description": "A notification for the user.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["reminder", "alert", "update", "achievement"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["id", "title", "message", "type", "timestamp", "read"]
+    },
+    "SkillTestResult": {
+      "title": "Skill Test Result",
+      "description": "Results from a skill test.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "testId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "results": { "type": "array", "items": { "type": "object" } }
+      },
+      "required": ["id", "testId", "timestamp", "results"]
+    },
+    "ShopItem": {
+      "title": "Locker Room Item",
+      "description": "An item that can be purchased with points.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique item ID." },
+        "name": { "type": "string", "description": "Item name." },
+        "category": { "type": "string", "enum": ["Shoes", "Jersey", "Socks", "Headband", "Arm Sleeve", "Shorts"], "description": "Item category." },
+        "price": { "type": "number", "description": "Cost in points." },
+        "image": { "type": "string", "description": "Item image URL." }
+      },
+      "required": ["id", "name", "price", "category"]
+    },
+    "IQScenario": {
+      "title": "Basketball IQ Scenario",
+      "description": "A tactical scenario for analysis.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique scenario ID." },
+        "description": { "type": "string", "description": "Scenario description." },
+        "options": { "type": "array", "items": { "type": "string" }, "description": "Possible choices." },
+        "correctOption": { "type": "number", "description": "Index of the correct choice." },
+        "explanation": { "type": "string", "description": "Why this is the correct choice." }
+      },
+      "required": ["id", "description", "options", "correctOption"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile document."
+    },
+    "/users/{userId}/schedule/{sessionId}": {
+      "schema": "ScheduleSession",
+      "description": "User's training schedule."
+    },
+    "/users/{userId}/skillLogs/{logId}": {
+      "schema": "SkillLog",
+      "description": "User's skill reflections."
+    },
+    "/drills/{drillId}": {
+      "schema": "Drill",
+      "description": "Global drill library."
+    },
+    "/workouts/{workoutId}": {
+      "schema": "Workout",
+      "description": "Premade and custom workouts."
+    },
+    "/shop/{itemId}": {
+      "schema": "ShopItem",
+      "description": "Items available for purchase."
+    },
+    "/iqScenarios/{scenarioId}": {
+      "schema": "IQScenario",
+      "description": "Tactical analysis scenarios."
+    },
+    "/achievements/{achievementId}": {
+      "schema": "Achievement",
+      "description": "Global achievements list."
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": "AppNotification",
+      "description": "User's notifications."
+    },
+    "/users/{userId}/testResults/{resultId}": {
+      "schema": "SkillTestResult",
+      "description": "User's skill test history."
+    }
+  }
+}
