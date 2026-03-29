@@ -1,0 +1,8 @@
+workflows:
+  ios-workflow:
+    name: iOS Workflow
+    environment:
+      xcode: latest
+    scripts:
+      - name: Build iOS app
+        script: echo "Build started"
